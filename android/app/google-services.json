@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "888413389194",
+    "project_id": "clean-project-a861c",
+    "storage_bucket": "clean-project-a861c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:888413389194:android:8770b5153213c7097a0873",
+        "android_client_info": {
+          "package_name": "com.example.clean_arch_pro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmUs5ReR9To8K9iWFL3HIQcZvmLsE81tQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
