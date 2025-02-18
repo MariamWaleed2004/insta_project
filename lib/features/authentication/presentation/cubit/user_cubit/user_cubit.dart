@@ -36,10 +36,13 @@ class UserCubit extends Cubit<UserState> {
 
     Future<void> updateUser({required UserEntity user}) async {
         try {
+          emit(UserUpdating());
           await updateUserUsecase.call(user);
+          emit(UserUpdated());
         } on SocketException catch (_) {
           emit(UserFailure());
-        } catch (_) {
+        } catch (e) {
+          print("Error updating user: $e"); 
           emit(UserFailure());
         }
       }

@@ -41,20 +41,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future selectImage() async {
     try {
-      final pickedFile = await ImagePicker.platform.getImageFromSource(source: ImageSource.gallery);
+      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-      setState(() {
         if(pickedFile != null) {
           setState(() {
           _image = File(pickedFile.path);
           });
         } else {
           toast("no image selected");
-          print("no image has been selected");
+          debugPrint("no image has been selected");
         }
-      });
+    
 
     } catch(e) {
+      debugPrint('An error occurred: $e');
       toast("some error occured $e");
     }
   }
@@ -66,8 +66,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         backgroundColor: backGroundColor,
         body: BlocConsumer<CredentialCubit, CredentialState>(
           listener: (context, credentailState) {
+
+            if(credentailState is CredentialLoading) {
+              setState(() {
+                _isSigningUp = true;
+              });
+            }
+
             if(credentailState is CredentialSuccess) {
               BlocProvider.of<AuthCubit>(context).loggedIn();
+              setState(() {
+                _isSigningUp = false;
+              });
             }
             if(credentailState is CredentialFailure) {
               setState(() {

@@ -1,6 +1,7 @@
 import 'package:clean_arch_pro/core/const.dart';
 import 'package:clean_arch_pro/features/authentication/domain/entities/user_entity.dart';
 import 'package:clean_arch_pro/features/authentication/presentation/cubit/auth_cubit/auth_cubit.dart';
+import 'package:clean_arch_pro/features/authentication/presentation/widgets/profile_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,9 +42,9 @@ class ProfileScreen extends StatelessWidget {
                   Container(
                     width: 80,
                     height: 80,
-                    decoration: BoxDecoration(
-                      color: secondaryColor,
-                      shape: BoxShape.circle,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(40),
+                      child: profileWidget(imageUrl: currentUser.profileUrl),
                     ),
                   ),
                   Row(
@@ -154,7 +155,7 @@ class ProfileScreen extends StatelessWidget {
                 Padding(padding: const EdgeInsets.only(left: 10),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, ScreenConst.editProfileScreen);
+                    Navigator.pushNamed(context, ScreenConst.editProfileScreen, arguments: currentUser);
                     //Navigator.push(context, MaterialPageRoute(builder: (ctx) => EditProfileScreen()));
                   },
                   child: Text(

@@ -7,6 +7,7 @@ import 'package:clean_arch_pro/features/authentication/domain/entities/user_enti
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 
@@ -129,8 +130,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> signUpUser(UserEntity user) async {
     try {
-      await firebaseAuth.createUserWithEmailAndPassword(email: user.email!, password: user.password!).then((value) async {
-        if(value.user?.uid != null) {
+      await firebaseAuth.createUserWithEmailAndPassword(email: user.email!, password: user.password!).then((currentUser) async {
+        if(currentUser.user?.uid != null) {
           if(user.imageFile != null) {
             uploadImageToStorage(user.imageFile, false, "profileImages").then((profileUrl) {
               createUserWithImage(user, profileUrl);
@@ -153,16 +154,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
  
   @override
   Future<String> uploadImageToStorage(File? file, bool isPost, String childName) async {
-    Reference ref = firebaseStorage.ref().child(childName).child(firebaseAuth.currentUser!.uid);
 
-    if(isPost) {
-      String id = Uuid().v1();
-      ref = ref.child(id);
-    }
+    final ref = FirebaseStorage.instance
+    .ref()
+    .child(childName)
+    .child('${firebaseAuth.currentUser!.uid}.jpg');
 
-    final UploadTask = ref.putFile(file!);
 
-    final imageUrl = (await UploadTask.whenComplete(() {})).ref.getDownloadURL();
+
+    await ref.putFile(file!);
+    final imageUrl = ref.getDownloadURL();
 
     return await imageUrl;
     
@@ -182,8 +183,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   
  @override
   Future<void> updateUser(UserEntity user) async {
+
+    if(user.uid == null || user.uid!.isEmpty) {
+      throw Exception("User UID is required to update user data");
+    }
+
     final userCollection = firebaseFirestore.collection(FirebaseConst.users);
-    Map<String, dynamic> userInformation = Map();
+    Map<String, dynamic> userInformation = {};
 
     if(user.username != '' && user.username != null) userInformation['username'] = user.username;
 
@@ -201,7 +207,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     if(user.totalPosts != null) userInformation['totalPosts'] = user.totalPosts;
 
-    userCollection.doc(user.uid).update(userInformation);
+    try {
+      userCollection.doc(user.uid).update(userInformation);
+      debugPrint("User data updated successfully");
+    } catch (e) {
+      debugPrint("Failed to update user: $e");
+      throw Exception("Failed to update user data");
+    }
        
     
   } 

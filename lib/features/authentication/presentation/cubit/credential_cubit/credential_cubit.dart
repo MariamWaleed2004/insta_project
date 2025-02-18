@@ -34,12 +34,17 @@ class CredentialCubit extends Cubit<CredentialState> {
       Future<void> signUpUser({required UserEntity user}) async {
         emit(CredentialLoading());
         try {
-          await signUpUserUsecase.call(user);
+          await signUpUserUsecase.call(user).timeout(
+            Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception("signUp process timed out");
+            },
+          );
           emit(CredentialSuccess());
         } on SocketException catch (_) {
-          emit(CredentialFailure());
-        } catch (_) {
-          emit(CredentialFailure());
+          emit(CredentialFailure(errorMessage: "No internet connection"));
+        } catch (e) {
+          emit(CredentialFailure(errorMessage: e.toString()));
         }
       }
 }

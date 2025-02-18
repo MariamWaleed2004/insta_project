@@ -1,4 +1,5 @@
 import 'package:clean_arch_pro/core/const.dart';
+import 'package:clean_arch_pro/features/authentication/domain/entities/user_entity.dart';
 import 'package:clean_arch_pro/features/authentication/presentation/screens/sign_in_screen.dart';
 import 'package:clean_arch_pro/features/authentication/presentation/screens/sign_up_screen.dart';
 import 'package:clean_arch_pro/features/comment/presentation/screens/comment_screen.dart';
@@ -13,7 +14,13 @@ class OnGenerateRoute {
 
     switch(settings.name) {
       case ScreenConst.editProfileScreen: {
-        return routeBuilder(EditProfileScreen());
+        if(args is UserEntity) {
+        return routeBuilder(EditProfileScreen(currentUser: args,));
+
+        } else {
+          return routeBuilder(NoScreenFound());
+        }
+       
       }
       case ScreenConst.updatePostScreen: {
         return routeBuilder(UpdatePostScreen());
